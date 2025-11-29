@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import Vapi from '@vapi-ai/web';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
@@ -9,10 +11,26 @@ import { Mic, MicOff, MessageSquare, BookOpen, Target, Lightbulb, Clock } from '
 import type { VapiMessage } from '@/types/vapi';
 
 export default function BehavioralInterview() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  console.log("User id", user?.id);
+
+  const callIdRef = useRef<string | null>(null);
+  console.log('BehavioralInterview location.state:', location.state);
+  const {
+    company_name,
+    role,
+    user_background,
+    company_background,
+    behavioral_questions
+  } = location.state || {};
+
   const [vapi, setVapi] = useState<Vapi | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [transcript, setTranscript] = useState<VapiMessage[]>([]);
+  const [_transcript, setTranscript] = useState<VapiMessage[]>([]);
   const [callDuration, setCallDuration] = useState(0);
 
   // Get API key from environment variable
@@ -33,6 +51,9 @@ export default function BehavioralInterview() {
       console.log('Behavioral interview ended');
       setIsConnected(false);
       setIsSpeaking(false);
+      if (callIdRef.current) {
+        navigate(`/call-analysis/${callIdRef.current}`);
+      }
     });
 
     vapiInstance.on('speech-start', () => {
@@ -79,13 +100,22 @@ export default function BehavioralInterview() {
       // Pass dynamic variables for the behavioral interview prompt
       vapi.start(ASSISTANT_ID, {
         variableValues: {
-          company: "Example Corp", // Replace with actual company name
-          user_background: "Software Engineer with 3 years of experience in full-stack development, proficient in React and Node.js",
-          role: "Senior Software Engineer",
+          company: company_name || "Placeholder Company",
+          user_background: user_background || "Placeholder background here",
+          role: role || "Placeholder Role",
           interviewer_name: "Leah",
-          company_research: "Example Corp is a leading tech company known for innovation and collaborative culture",
-          behavioral_questions: "Tell me about a time you faced a challenge at work, Describe a situation where you led a team, How do you handle conflicts with colleagues",
-          call_type: "behavioural"
+          company_research: company_background || "Placeholder company research",
+          behavioral_questions: Array.isArray(behavioral_questions)
+            ? (behavioral_questions.length > 0
+              ? behavioral_questions.join(". ")
+              : "Tell me about a time you faced a challenge. How did you overcome it?")
+            : (behavioral_questions || "Describe a situation where you demonstrated leadership."),
+          call_type: "behavioural",
+          user_id: user?.id
+        }
+      }).then((call: any) => {
+        if (call) {
+          callIdRef.current = call.id;
         }
       });
     }
@@ -121,13 +151,7 @@ export default function BehavioralInterview() {
     }
   ];
 
-  const commonQuestions = [
-    "Tell me about a time you faced a challenge at work",
-    "Describe a situation where you led a team",
-    "How do you handle conflicts with colleagues?",
-    "Give an example of when you failed and what you learned",
-    "Tell me about a time you had to meet a tight deadline"
-  ];
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/20">

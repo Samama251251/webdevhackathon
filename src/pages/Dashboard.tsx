@@ -163,6 +163,30 @@ export default function Dashboard() {
                 </Card>
               </div>
 
+              {/* Deep Research Card */}
+              <Card className="mt-6 border-2 border-primary/10 bg-gradient-to-r from-primary/5 to-purple-500/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-2xl">⚡</span>
+                    Deep Research Interview Prep
+                  </CardTitle>
+                  <CardDescription>
+                    Generate a comprehensive, AI-powered interview dossier for your target role.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Get company intelligence, tailored technical questions, and behavioral scenarios based on real-time web research.
+                  </p>
+                  <Button
+                    onClick={() => navigate('/deep-research')}
+                    className="w-full sm:w-auto"
+                  >
+                    Start Deep Research
+                  </Button>
+                </CardContent>
+              </Card>
+
               {/* Account Info */}
               <Card>
                 <CardHeader>

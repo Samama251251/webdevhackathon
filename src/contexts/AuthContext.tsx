@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
 import { authService } from '@/services/authService';
 import type { User, SignUpCredentials, SignInCredentials } from '@/types/auth';
@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Listen for auth state changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         const currentUser: User = {
           id: session.user.id,
