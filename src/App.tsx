@@ -7,6 +7,8 @@ import SignUp from '@/pages/SignUp';
 import Dashboard from '@/pages/Dashboard';
 import BehavioralInterview from '@/pages/BehavioralInterview';
 import TechnicalInterview from '@/pages/TechnicalInterview';
+import DeepResearchPrep from '@/pages/DeepResearchPrep';
+import CallAnalysis from '@/pages/CallAnalysis';
 
 function App() {
   return (
@@ -37,6 +39,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <TechnicalInterview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/deep-research"
+            element={
+              <ProtectedRoute>
+                <DeepResearchPrep />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/call-analysis/:callId"
+            element={
+              <ProtectedRoute>
+                <CallAnalysis />
               </ProtectedRoute>
             }
           />

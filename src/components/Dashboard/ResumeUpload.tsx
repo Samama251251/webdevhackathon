@@ -1,4 +1,4 @@
-import { useState, useRef, ChangeEvent, DragEvent } from 'react';
+import { useState, useRef, type ChangeEvent, type DragEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -125,11 +125,10 @@ export const ResumeUpload = ({ onUploadComplete }: ResumeUploadProps) => {
       <CardContent className="space-y-4">
         {/* Drag and Drop Zone */}
         <div
-          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-            isDragging
+          className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${isDragging
               ? 'border-primary bg-primary/5'
               : 'border-gray-300 hover:border-primary'
-          }`}
+            }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}

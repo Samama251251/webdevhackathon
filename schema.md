@@ -73,6 +73,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 CREATE TABLE public.call_reports (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE NOT NULL, -- Added user_id as foreign key
     strengths TEXT[],   -- List of strengths
     weaknesses TEXT[],  -- List of weaknesses
     passed BOOLEAN,     -- true = Passed, false = Failed
