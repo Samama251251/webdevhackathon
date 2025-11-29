@@ -1,17 +1,28 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card';
 import { Navbar } from '@/components/layout/Navbar';
+import { Sidebar } from '@/components/layout/Sidebar';
 
 import { ResumeUpload } from '@/components/Dashboard/ResumeUpload';
 import { ResumeProfile } from '@/components/Dashboard/ResumeProfile';
 import { RecommendedJobs } from '@/components/Dashboard/RecommendedJobs';
+
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+
 import { resumeService } from '@/services/resumeService';
 import type { ResumeWithDetails } from '@/types/resume';
-import { PanelLeftClose, PanelLeftOpen, FileText, Briefcase, Mic, User, LogOut } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
+
+
+
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
@@ -60,158 +71,95 @@ export default function Dashboard() {
     }
   };
 
-  const sidebarItems = [
-    {
-      id: 'resume',
-      label: 'Resume',
-      icon: FileText,
-      disabled: false
-    },
-    {
-      id: 'jobs',
-      label: 'Job Matching',
-      icon: Briefcase,
-      disabled: !resume
-    },
-    {
-      id: 'interview',
-      label: 'AI Interview Prep',
-      icon: Mic,
-      disabled: false
-    }
-  ];
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50/50">
       <Navbar />
+
       <div className="flex-1 flex flex-col md:flex-row">
         {/* Sidebar */}
-        <aside
-          className={cn(
-            "flex-shrink-0 bg-white border-r min-h-[calc(100vh-4rem)] transition-all duration-300 ease-in-out relative",
-            isCollapsed ? "w-20" : "w-64"
-          )}
-        >
-          <div className="p-4 space-y-6">
-            {/* Toggle Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute -right-3 top-6 h-6 w-6 rounded-full border bg-white shadow-md z-10 hover:bg-gray-100"
-              onClick={() => setIsCollapsed(!isCollapsed)}
-            >
-              {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
-            </Button>
+        <Sidebar
+          user={user}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onSignOut={handleSignOut}
+          isCollapsed={isCollapsed}
+          setIsCollapsed={setIsCollapsed}
+          resumeExists={!!resume}
+        />
 
-            <div className={cn("flex items-center gap-3 px-2 overflow-hidden", isCollapsed && "justify-center px-0")}>
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
-                <User className="h-5 w-5" />
-              </div>
-              {!isCollapsed && (
-                <div className="overflow-hidden transition-opacity duration-300">
-                  <p className="font-medium truncate">{user?.username || 'User'}</p>
-                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+        {/* Main Content */}
+        <main className="flex-1 p-6 space-y-6">
+          {/* Resume Tab */}
+          {activeTab === 'resume' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold tracking-tight">Resume</h2>
+
+              {resume ? (
+                <ResumeProfile resume={resume} onDelete={handleDeleteResume} />
+              ) : (
+                <div className="max-w-2xl mx-auto mt-8">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle>Upload Your Resume</CardTitle>
+                      <CardDescription>
+                        Upload your resume to get started with AI-powered analysis and job matching.
+                      </CardDescription>
+                    </CardHeader>
+
+                    <CardContent>
+                      <ResumeUpload onUploadComplete={handleUploadComplete} />
+                    </CardContent>
+                  </Card>
                 </div>
               )}
             </div>
+          )}
 
-              {/* Deep Research Card */}
-              <Card className="mt-6 border-2 border-primary/10 bg-gradient-to-r from-primary/5 to-purple-500/5">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <span className="text-2xl">⚡</span>
-                    Deep Research Interview Prep
-                  </CardTitle>
-                  <CardDescription>
-                    Generate a comprehensive, AI-powered interview dossier for your target role.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Get company intelligence, tailored technical questions, and behavioral scenarios based on real-time web research.
-                  </p>
-                  <Button
-                    onClick={() => navigate('/deep-research')}
-                    className="w-full sm:w-auto"
-                  >
-                    Start Deep Research
-                  </Button>
-                </CardContent>
-              </Card>
+          {/* Job Matching */}
+          {activeTab === 'jobs' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold tracking-tight">Job Matching</h2>
 
-              {/* Account Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account Information</CardTitle>
-                  <CardDescription>Your account details</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Email:</p>
-                      <p className="font-medium">{user?.email}</p>
-                    </div>
-                    <ResumeProfile resume={resume} onDelete={handleDeleteResume} />
-                  </div>
-                ) : (
-                  <div className="max-w-2xl mx-auto mt-8">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Upload Your Resume</CardTitle>
-                        <CardDescription>
-                          Upload your resume to get started with AI-powered analysis and job matching.
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent>
-                        <ResumeUpload onUploadComplete={handleUploadComplete} />
-                      </CardContent>
-                    </Card>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'jobs' && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold tracking-tight">Job Matching</h2>
-                {resume && user ? (
-                  <RecommendedJobs resumeId={resume.id} userId={user.id} />
-                ) : (
-                  <Card>
-                    <CardContent className="py-12 text-center">
-                      <p className="text-gray-500">Please upload a resume to see job recommendations.</p>
-                      <Button variant="outline" className="mt-4" onClick={() => setActiveTab('resume')}>
-                        Go to Resume
-                      </Button>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            )}
-
-            {activeTab === 'interview' && (
-              <div className="space-y-6">
-                <h2 className="text-2xl font-bold tracking-tight">AI Interview Prep</h2>
+              {resume && user ? (
+                <RecommendedJobs resumeId={resume.id} userId={user.id} />
+              ) : (
                 <Card>
-                  <CardHeader>
-                    <CardTitle>Practice Interview</CardTitle>
-                    <CardDescription>Practice for your interviews with AI-powered mock sessions.</CardDescription>
-                  </CardHeader>
-                  <CardContent className="py-12 text-center space-y-4">
-                    <div className="p-4 bg-muted rounded-full w-16 h-16 mx-auto flex items-center justify-center">
-                      <span className="text-2xl">🎙️</span>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium">Coming Soon</h3>
-                      <p className="text-muted-foreground max-w-md mx-auto mt-2">
-                        We are working on a deep-learning powered interview preparation module to help you ace your interviews. Stay tuned!
-                      </p>
-                    </div>
+                  <CardContent className="py-12 text-center">
+                    <p className="text-gray-500">Please upload a resume to see job recommendations.</p>
+                    <Button variant="outline" className="mt-4" onClick={() => setActiveTab('resume')}>
+                      Go to Resume
+                    </Button>
                   </CardContent>
                 </Card>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          )}
+
+          {/* Interview Prep */}
+          {activeTab === 'interview' && (
+            <div className="space-y-6">
+              <h2 className="text-2xl font-bold tracking-tight">AI Interview Prep</h2>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Practice Interview</CardTitle>
+                  <CardDescription>Practice for your interviews with AI-powered mock sessions.</CardDescription>
+                </CardHeader>
+
+                <CardContent className="py-12 text-center space-y-4">
+                  <div className="p-4 bg-muted rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                    <span className="text-2xl">🎙️</span>
+                  </div>
+                  <h3 className="text-lg font-medium">Coming Soon</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto mt-2">
+                    We are working on a deep-learning powered interview preparation module to help you ace your interviews. Stay tuned!
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </main>
       </div>
     </div>

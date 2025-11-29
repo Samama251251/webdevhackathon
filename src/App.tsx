@@ -9,6 +9,7 @@ import BehavioralInterview from '@/pages/BehavioralInterview';
 import TechnicalInterview from '@/pages/TechnicalInterview';
 import DeepResearchPrep from '@/pages/DeepResearchPrep';
 import CallAnalysis from '@/pages/CallAnalysis';
+import Analytics from '@/pages/Analytics';
 
 function App() {
   return (
@@ -62,6 +63,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <CallAnalysis />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Analytics />
               </ProtectedRoute>
             }
           />
