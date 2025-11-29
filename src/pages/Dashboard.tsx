@@ -1,9 +1,8 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Navbar } from '@/components/layout/Navbar';
-import { Footer } from '@/components/layout/Footer';
+
 import { ResumeUpload } from '@/components/Dashboard/ResumeUpload';
 import { ResumeProfile } from '@/components/Dashboard/ResumeProfile';
 import { RecommendedJobs } from '@/components/Dashboard/RecommendedJobs';
@@ -11,31 +10,24 @@ import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { resumeService } from '@/services/resumeService';
 import type { ResumeWithDetails } from '@/types/resume';
-import { Loader2 } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen, FileText, Briefcase, Mic, User, LogOut } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export default function Dashboard() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [resume, setResume] = useState<ResumeWithDetails | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<string>('overview');
+  const [activeTab, setActiveTab] = useState<string>('resume');
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const loadResumeData = async () => {
     if (!user) return;
 
-    setLoading(true);
     try {
       const latestResume = await resumeService.getLatestResumeWithDetails(user.id);
       setResume(latestResume);
-
-      // If resume exists and has details, switch to profile tab
-      if (latestResume && latestResume.details) {
-        setActiveTab('profile');
-      }
     } catch (error) {
       console.error('Error loading resume:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -50,7 +42,7 @@ export default function Dashboard() {
 
   const handleUploadComplete = () => {
     loadResumeData();
-    setActiveTab('profile');
+    setActiveTab('resume');
   };
 
   const handleDeleteResume = async () => {
@@ -62,168 +54,185 @@ export default function Dashboard() {
     const success = await resumeService.deleteResume(resume.id, user.id);
     if (success) {
       setResume(null);
-      setActiveTab('overview');
+      setActiveTab('resume');
     } else {
       alert('Failed to delete resume. Please try again.');
     }
   };
 
+  const sidebarItems = [
+    {
+      id: 'resume',
+      label: 'Resume',
+      icon: FileText,
+      disabled: false
+    },
+    {
+      id: 'jobs',
+      label: 'Job Matching',
+      icon: Briefcase,
+      disabled: !resume
+    },
+    {
+      id: 'interview',
+      label: 'AI Interview Prep',
+      icon: Mic,
+      disabled: false
+    }
+  ];
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50/50">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h1 className="text-3xl font-bold">Dashboard</h1>
-              <p className="text-gray-600 mt-1">Welcome back, {user?.username || user?.email}</p>
-            </div>
-            <Button onClick={handleSignOut} variant="outline">
-              Sign Out
+      <div className="flex-1 flex flex-col md:flex-row">
+        {/* Sidebar */}
+        <aside
+          className={cn(
+            "flex-shrink-0 bg-white border-r min-h-[calc(100vh-4rem)] transition-all duration-300 ease-in-out relative",
+            isCollapsed ? "w-20" : "w-64"
+          )}
+        >
+          <div className="p-4 space-y-6">
+            {/* Toggle Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute -right-3 top-6 h-6 w-6 rounded-full border bg-white shadow-md z-10 hover:bg-gray-100"
+              onClick={() => setIsCollapsed(!isCollapsed)}
+            >
+              {isCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
             </Button>
+
+            <div className={cn("flex items-center gap-3 px-2 overflow-hidden", isCollapsed && "justify-center px-0")}>
+              <div className="h-10 w-10 rounded-full bg-primary/10 flex-shrink-0 flex items-center justify-center text-primary">
+                <User className="h-5 w-5" />
+              </div>
+              {!isCollapsed && (
+                <div className="overflow-hidden transition-opacity duration-300">
+                  <p className="font-medium truncate">{user?.username || 'User'}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                </div>
+              )}
+            </div>
+
+            <nav className="space-y-1">
+              {sidebarItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => !item.disabled && setActiveTab(item.id)}
+                  disabled={item.disabled}
+                  className={cn(
+                    "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    activeTab === item.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
+                    item.disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
+                    isCollapsed && "justify-center px-0"
+                  )}
+                  title={isCollapsed ? item.label : undefined}
+                >
+                  <item.icon className="h-4 w-4 flex-shrink-0" />
+                  {!isCollapsed && <span>{item.label}</span>}
+                </button>
+              ))}
+            </nav>
+
+            <div className="pt-4 border-t">
+              <Button
+                onClick={handleSignOut}
+                variant="ghost"
+                className={cn(
+                  "w-full justify-start text-muted-foreground hover:text-foreground px-2",
+                  isCollapsed && "justify-center px-0"
+                )}
+                title={isCollapsed ? "Sign Out" : undefined}
+              >
+                <LogOut className="h-4 w-4 flex-shrink-0" />
+                {!isCollapsed && <span className="ml-2">Sign Out</span>}
+              </Button>
+            </div>
           </div>
+        </aside>
 
-          {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList>
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="upload">Upload Resume</TabsTrigger>
-              <TabsTrigger value="profile" disabled={!resume}>
-                My Resume
-              </TabsTrigger>
-              <TabsTrigger value="jobs" disabled={!resume}>
-                Jobs For You
-              </TabsTrigger>
-            </TabsList>
+        {/* Main Content */}
+        <main className="flex-1 p-8 overflow-y-auto">
+          <div className="max-w-5xl mx-auto">
+            {activeTab === 'resume' && (
+              <div className="space-y-6">
+                {resume ? (
+                  <div className="space-y-6">
+                    <div className="flex justify-end">
+                      <Button variant="outline" onClick={() => {
+                        if (window.confirm('Uploading a new resume will replace the current one. Continue?')) {
+                          setResume(null);
+                        }
+                      }}>
+                        Upload New Resume
+                      </Button>
+                    </div>
+                    <ResumeProfile resume={resume} onDelete={handleDeleteResume} />
+                  </div>
+                ) : (
+                  <div className="max-w-2xl mx-auto mt-8">
+                    <Card>
+                      <CardHeader>
+                        <CardTitle>Upload Your Resume</CardTitle>
+                        <CardDescription>
+                          Upload your resume to get started with AI-powered analysis and job matching.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <ResumeUpload onUploadComplete={handleUploadComplete} />
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+              </div>
+            )}
 
-            {/* Overview Tab */}
-            <TabsContent value="overview" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {activeTab === 'jobs' && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold tracking-tight">Job Matching</h2>
+                {resume && user ? (
+                  <RecommendedJobs resumeId={resume.id} userId={user.id} />
+                ) : (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <p className="text-gray-500">Please upload a resume to see job recommendations.</p>
+                      <Button variant="outline" className="mt-4" onClick={() => setActiveTab('resume')}>
+                        Go to Resume
+                      </Button>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
+
+            {activeTab === 'interview' && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold tracking-tight">AI Interview Prep</h2>
                 <Card>
                   <CardHeader>
-                    <CardTitle>Resume Analysis</CardTitle>
-                    <CardDescription>
-                      Upload and analyze your resume with AI
-                    </CardDescription>
+                    <CardTitle>Practice Interview</CardTitle>
+                    <CardDescription>Practice for your interviews with AI-powered mock sessions.</CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Get intelligent insights from your resume including skills extraction,
-                      experience analysis, and more.
-                    </p>
-                    <Button onClick={() => setActiveTab('upload')}>
-                      {resume ? 'Upload New Resume' : 'Get Started'}
-                    </Button>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Profile Status</CardTitle>
-                    <CardDescription>Your current resume status</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    {loading ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="text-sm">Loading...</span>
-                      </div>
-                    ) : resume ? (
-                      <div className="space-y-2">
-                        <p className="text-sm text-gray-600">
-                          Resume uploaded on{' '}
-                          {new Date(resume.created_at).toLocaleDateString()}
-                        </p>
-                        {resume.details ? (
-                          <div className="space-y-1">
-                            <p className="text-sm font-medium text-green-600">
-                              ✓ Analysis complete
-                            </p>
-                            <Button
-                              variant="link"
-                              className="p-0 h-auto"
-                              onClick={() => setActiveTab('profile')}
-                            >
-                              View Resume Profile →
-                            </Button>
-                          </div>
-                        ) : (
-                          <p className="text-sm text-yellow-600">
-                            Analysis in progress...
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-600">
-                        No resume uploaded yet. Upload your resume to get started.
+                  <CardContent className="py-12 text-center space-y-4">
+                    <div className="p-4 bg-muted rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                      <span className="text-2xl">🎙️</span>
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-medium">Coming Soon</h3>
+                      <p className="text-muted-foreground max-w-md mx-auto mt-2">
+                        We are working on a deep-learning powered interview preparation module to help you ace your interviews. Stay tuned!
                       </p>
-                    )}
+                    </div>
                   </CardContent>
                 </Card>
               </div>
-
-              {/* Account Info */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>Account Information</CardTitle>
-                  <CardDescription>Your account details</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <p className="text-sm text-muted-foreground">Email:</p>
-                      <p className="font-medium">{user?.email}</p>
-                    </div>
-                    {user?.username && (
-                      <div className="space-y-2">
-                        <p className="text-sm text-muted-foreground">Username:</p>
-                        <p className="font-medium">{user.username}</p>
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Upload Tab */}
-            <TabsContent value="upload">
-              <ResumeUpload onUploadComplete={handleUploadComplete} />
-            </TabsContent>
-
-            {/* Profile Tab */}
-            <TabsContent value="profile">
-              {resume ? (
-                <ResumeProfile resume={resume} onDelete={handleDeleteResume} />
-              ) : (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <p className="text-gray-500">No resume data available</p>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-
-            {/* Jobs Tab */}
-            <TabsContent value="jobs">
-              {resume && user ? (
-                <RecommendedJobs resumeId={resume.id} userId={user.id} />
-              ) : (
-                <Card>
-                  <CardContent className="py-12 text-center">
-                    <p className="text-gray-500">Please upload a resume to see job recommendations.</p>
-                    <Button variant="outline" className="mt-4" onClick={() => setActiveTab('upload')}>
-                      Upload Resume
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
-      <Footer />
+            )}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
-
