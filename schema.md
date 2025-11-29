@@ -1,3 +1,5 @@
+CREATE TYPE call_type AS ENUM ('behavioural', 'technical');
+
 -- 1. PROFILES (Users)
 -- Linked to Supabase Auth
 CREATE TABLE public.profiles (
@@ -55,6 +57,16 @@ BEGIN
   RETURN new;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE TABLE public.call_reports (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    strengths TEXT[],   -- List of strengths
+    weaknesses TEXT[],  -- List of weaknesses
+    passed BOOLEAN,     -- true = Passed, false = Failed
+    call_type call_type,     -- Enum: 'behavioural' or 'technical'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
