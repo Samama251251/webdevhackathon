@@ -77,15 +77,13 @@ export interface JobRecommendation {
   thumbnail?: string;
   extensions?: Record<string, any>;
   apply_link?: string;
-  compatibility_score?: number;
-  match_explanation?: string;
+  compatibility_score: number;
+  match_explanation: string;
   key_requirements?: string[];
   alignment?: {
     pros: string[];
     cons: string[];
   };
-  posted_at?: string;
-  salary?: string;
 }
 
 export interface JobRecommendResponse {

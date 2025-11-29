@@ -84,11 +84,8 @@ export function RecommendedJobs({ resumeId, userId }: RecommendedJobsProps) {
         );
     }
 
-    const topPicks = jobs.filter(job => job.compatibility_score !== undefined && job.compatibility_score !== null);
-    const otherJobs = jobs.filter(job => job.compatibility_score === undefined || job.compatibility_score === null);
-
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <div className="flex justify-between items-center">
                 <div>
                     <h2 className="text-2xl font-bold tracking-tight">Recommended Jobs</h2>
@@ -101,161 +98,110 @@ export function RecommendedJobs({ resumeId, userId }: RecommendedJobsProps) {
                 </Badge>
             </div>
 
-            {/* Top Picks Section */}
-            <div className="space-y-6">
-                <h3 className="text-xl font-semibold flex items-center gap-2 text-primary">
-                    <ThumbsUp className="h-5 w-5" /> Top Picks for You
-                </h3>
-                <div className="grid gap-6">
-                    {topPicks.map((job) => (
-                        <Card key={job.job_id} className="overflow-hidden hover:shadow-md transition-shadow border-l-4" style={{ borderLeftColor: (job.compatibility_score || 0) >= 80 ? '#22c55e' : (job.compatibility_score || 0) >= 60 ? '#eab308' : '#9ca3af' }}>
-                            <CardHeader className="pb-3">
-                                <div className="flex justify-between items-start gap-4">
-                                    <div className="space-y-1">
-                                        <CardTitle className="text-xl text-primary">
-                                            {job.title}
-                                        </CardTitle>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <Building2 className="h-4 w-4" />
-                                            <span>{job.company_name}</span>
-                                            <span className="text-gray-300">•</span>
-                                            <MapPin className="h-4 w-4" />
-                                            <span>{job.location}</span>
-                                        </div>
-                                    </div>
-                                    <div className={`px-3 py-1 rounded-full border text-sm font-semibold flex items-center gap-1.5 ${getScoreColor(job.compatibility_score || 0)}`}>
-                                        <ThumbsUp className="h-3.5 w-3.5" />
-                                        {job.compatibility_score}% Match
+            <div className="grid gap-6">
+                {jobs.map((job) => (
+                    <Card key={job.job_id} className="overflow-hidden hover:shadow-md transition-shadow border-l-4" style={{ borderLeftColor: job.compatibility_score >= 80 ? '#22c55e' : job.compatibility_score >= 60 ? '#eab308' : '#9ca3af' }}>
+                        <CardHeader className="pb-3">
+                            <div className="flex justify-between items-start gap-4">
+                                <div className="space-y-1">
+                                    <CardTitle className="text-xl text-primary">
+                                        {job.title}
+                                    </CardTitle>
+                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Building2 className="h-4 w-4" />
+                                        <span>{job.company_name}</span>
+                                        <span className="text-gray-300">•</span>
+                                        <MapPin className="h-4 w-4" />
+                                        <span>{job.location}</span>
                                     </div>
                                 </div>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="bg-slate-50 p-4 rounded-md text-sm text-slate-700 border border-slate-100">
-                                        <p className="font-semibold text-slate-900 mb-1">Why it's a match:</p>
-                                        <p className="mb-3">{job.match_explanation}</p>
+                                <div className={`px-3 py-1 rounded-full border text-sm font-semibold flex items-center gap-1.5 ${getScoreColor(job.compatibility_score)}`}>
+                                    <ThumbsUp className="h-3.5 w-3.5" />
+                                    {job.compatibility_score}% Match
+                                </div>
+                            </div>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="bg-slate-50 p-4 rounded-md text-sm text-slate-700 border border-slate-100">
+                                    <p className="font-semibold text-slate-900 mb-1">Why it's a match:</p>
+                                    <p className="mb-3">{job.match_explanation}</p>
 
-                                        {job.alignment && (
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 pt-3 border-t border-slate-200">
-                                                <div>
-                                                    <p className="font-medium text-green-700 mb-2 flex items-center gap-1">
-                                                        <span className="bg-green-100 p-0.5 rounded-full">✓</span> Your Strengths
-                                                    </p>
-                                                    <ul className="list-disc list-inside space-y-1 text-slate-600">
-                                                        {job.alignment.pros.map((pro, i) => (
-                                                            <li key={i}>{pro}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-amber-700 mb-2 flex items-center gap-1">
-                                                        <span className="bg-amber-100 p-0.5 rounded-full">!</span> Potential Gaps
-                                                    </p>
-                                                    <ul className="list-disc list-inside space-y-1 text-slate-600">
-                                                        {job.alignment.cons.map((con, i) => (
-                                                            <li key={i}>{con}</li>
-                                                        ))}
-                                                    </ul>
-                                                </div>
+                                    {job.alignment && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-3 pt-3 border-t border-slate-200">
+                                            <div>
+                                                <p className="font-medium text-green-700 mb-2 flex items-center gap-1">
+                                                    <span className="bg-green-100 p-0.5 rounded-full">✓</span> Your Strengths
+                                                </p>
+                                                <ul className="list-disc list-inside space-y-1 text-slate-600">
+                                                    {job.alignment.pros.map((pro, i) => (
+                                                        <li key={i}>{pro}</li>
+                                                    ))}
+                                                </ul>
                                             </div>
-                                        )}
-                                    </div>
-
-                                    {job.key_requirements && job.key_requirements.length > 0 && (
-                                        <div>
-                                            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Key Requirements</p>
-                                            <div className="flex flex-wrap gap-2">
-                                                {job.key_requirements.map((req, i) => (
-                                                    <Badge key={i} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100">
-                                                        {req}
-                                                    </Badge>
-                                                ))}
+                                            <div>
+                                                <p className="font-medium text-amber-700 mb-2 flex items-center gap-1">
+                                                    <span className="bg-amber-100 p-0.5 rounded-full">!</span> Potential Gaps
+                                                </p>
+                                                <ul className="list-disc list-inside space-y-1 text-slate-600">
+                                                    {job.alignment.cons.map((con, i) => (
+                                                        <li key={i}>{con}</li>
+                                                    ))}
+                                                </ul>
                                             </div>
                                         </div>
                                     )}
+                                </div>
 
-                                    {job.description && (
-                                        <p className="text-sm text-gray-600 line-clamp-2 mt-2">
-                                            {job.description}
-                                        </p>
-                                    )}
-
-                                    <div className="flex items-center justify-between pt-2 border-t mt-2">
-                                        <div className="flex gap-2 items-center text-xs text-muted-foreground">
-                                            {job.salary && (
-                                                <Badge variant="outline" className="text-xs font-medium text-green-700 bg-green-50 border-green-200">
-                                                    {job.salary}
+                                {job.key_requirements && job.key_requirements.length > 0 && (
+                                    <div>
+                                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Key Requirements</p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {job.key_requirements.map((req, i) => (
+                                                <Badge key={i} variant="secondary" className="bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-100">
+                                                    {req}
                                                 </Badge>
-                                            )}
-                                            {job.posted_at && (
-                                                <span className="flex items-center gap-1">
-                                                    <span className="w-1 h-1 rounded-full bg-gray-400"></span>
-                                                    {job.posted_at}
-                                                </span>
-                                            )}
-                                            <span className="flex items-center gap-1">
-                                                <span className="w-1 h-1 rounded-full bg-gray-400"></span>
-                                                via {job.via}
-                                            </span>
+                                            ))}
                                         </div>
+                                    </div>
+                                )}
 
-                                        {job.apply_link && (
-                                            <Button asChild size="sm">
-                                                <a href={job.apply_link} target="_blank" rel="noopener noreferrer">
-                                                    Apply Now <ExternalLink className="ml-2 h-3 w-3" />
-                                                </a>
-                                            </Button>
+                                {job.description && (
+                                    <p className="text-sm text-gray-600 line-clamp-2 mt-2">
+                                        {job.description}
+                                    </p>
+                                )}
+
+                                <div className="flex items-center justify-between pt-2 border-t mt-2">
+                                    <div className="flex gap-2">
+                                        {job.extensions?.salary && (
+                                            <Badge variant="outline" className="text-xs">
+                                                {job.extensions.salary}
+                                            </Badge>
                                         )}
+                                        {job.extensions?.schedule_type && (
+                                            <Badge variant="outline" className="text-xs">
+                                                {job.extensions.schedule_type}
+                                            </Badge>
+                                        )}
+                                        <Badge variant="outline" className="text-xs">
+                                            via {job.via}
+                                        </Badge>
                                     </div>
-                                </div>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
-            </div>
 
-            {/* Other Jobs Section */}
-            {otherJobs.length > 0 && (
-                <div className="space-y-4 pt-4 border-t">
-                    <h3 className="text-xl font-semibold text-gray-700">More Opportunities</h3>
-                    <div className="grid gap-4">
-                        {otherJobs.map((job) => (
-                            <Card key={job.job_id} className="hover:shadow-sm transition-shadow">
-                                <CardContent className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                                    <div className="space-y-1">
-                                        <h4 className="font-semibold text-lg text-primary">{job.title}</h4>
-                                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
-                                            <span className="flex items-center gap-1">
-                                                <Building2 className="h-3.5 w-3.5" /> {job.company_name}
-                                            </span>
-                                            <span className="flex items-center gap-1">
-                                                <MapPin className="h-3.5 w-3.5" /> {job.location}
-                                            </span>
-                                            {job.salary && (
-                                                <span className="text-green-700 font-medium bg-green-50 px-1.5 py-0.5 rounded text-xs">
-                                                    {job.salary}
-                                                </span>
-                                            )}
-                                            {job.posted_at && (
-                                                <span className="text-xs text-gray-500">
-                                                    • {job.posted_at}
-                                                </span>
-                                            )}
-                                        </div>
-                                    </div>
                                     {job.apply_link && (
-                                        <Button asChild variant="outline" size="sm" className="shrink-0">
+                                        <Button asChild size="sm">
                                             <a href={job.apply_link} target="_blank" rel="noopener noreferrer">
-                                                Apply <ExternalLink className="ml-2 h-3 w-3" />
+                                                Apply Now <ExternalLink className="ml-2 h-3 w-3" />
                                             </a>
                                         </Button>
                                     )}
-                                </CardContent>
-                            </Card>
-                        ))}
-                    </div>
-                </div>
-            )}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }
