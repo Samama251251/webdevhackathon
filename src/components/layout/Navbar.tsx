@@ -1,8 +1,18 @@
 import { motion } from "framer-motion";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export function Navbar() {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <motion.nav
       initial={{ y: -100, opacity: 0 }}
@@ -17,7 +27,9 @@ export function Navbar() {
           transition={{ delay: 0.2 }}
           className="flex items-center space-x-2"
         >
-          <span className="text-xl font-bold">CareerPrep</span>
+          <Link to="/" className="text-xl font-bold hover:opacity-80 transition-opacity">
+            CareerPrep
+          </Link>
         </motion.div>
         <motion.div
           initial={{ opacity: 0 }}
@@ -25,16 +37,34 @@ export function Navbar() {
           transition={{ delay: 0.3 }}
           className="flex items-center gap-4"
         >
-          <Button variant="ghost" className="hidden sm:flex">
-            Features
-          </Button>
-          <Button variant="ghost" className="hidden sm:flex">
-            How It Works
-          </Button>
-          <Button>
-            Get Started
-            <ArrowRight className="ml-2 h-4 w-4" />
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" asChild>
+                <Link to="/dashboard">Dashboard</Link>
+              </Button>
+              <Button variant="outline" onClick={handleSignOut}>
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" className="hidden sm:flex">
+                Features
+              </Button>
+              <Button variant="ghost" className="hidden sm:flex">
+                How It Works
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link to="/signin">Sign In</Link>
+              </Button>
+              <Button asChild>
+                <Link to="/signup">
+                  Get Started
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+            </>
+          )}
         </motion.div>
       </div>
     </motion.nav>
