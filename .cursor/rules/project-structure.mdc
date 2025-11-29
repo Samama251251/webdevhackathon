@@ -1,0 +1,54 @@
+---
+alwaysApply: true
+---
+# Project Context & Architecture
+
+You are working on a React project (frontend) that connects to a backend/Supabase.
+
+The project follows a strict feature-based directory structure.
+
+# Directory Structure Rules
+
+## 1. Services & API (Supabase)
+
+- **Rule:** ALL external data fetching and Supabase interactions must reside in `src/services`.
+
+- **Constraint:** UI components (`src/components` or `src/pages`) must NEVER import `@supabase/supabase-js` directly.
+
+- **Pattern:** Components should import helper functions from `src/services` to fetch or mutate data.
+
+## 2. Component Organization
+
+- **Rule:** Components must be organized by domain or page, not flat in the directory.
+
+- **Specific Components:** If a component is specific to a page (e.g., the Landing page), it must go into a matching folder inside components (e.g., `src/components/Landing/HeroSection.tsx`).
+
+- **Shared Components:** Generic UI elements used across multiple pages (buttons, inputs, cards) must go in `src/components/common`.
+
+- **Layouts:** Global wrappers go in `src/components/layout`.
+
+## 3. General Folder Roles
+
+- `src/pages`: Route entry points only. Keep logic minimal here; delegate to components/hooks.
+
+- `src/hooks`: Custom React hooks (e.g., `useAuth`, `useFetch`).
+
+- `src/contexts`: React Context definitions (Global state).
+
+- `src/types`: TypeScript interfaces and type definitions. **ALL types must be defined in this folder. Never define types inline in components, services, or other files.**
+
+- `src/lib`: External library configurations (e.g., Supabase client initialization, Axios instances).
+
+# Coding Style Guidelines
+
+- **Naming:** Use PascalCase for components (e.g., `JobCard.tsx`) and camelCase for functions/hooks (e.g., `useJobData.ts`).
+
+- **Imports:** Use absolute imports where configured (e.g., `@/components/common/Button`) to avoid `../../` hell.
+
+- **Strict Mode:** Ensure all Supabase service calls are typed correctly using the types in `src/types`.
+
+- **Types:** ALL TypeScript interfaces, types, and type definitions MUST be placed in `src/types`. Never define types inline in component files, service files, or any other location. Import types from `src/types` when needed.
+
+- **Collaboration:** Use clear naming and comments to help teammates understand your code quickly.
+
+- **Debugging:** Log key actions and errors to the console for faster troubleshooting.
