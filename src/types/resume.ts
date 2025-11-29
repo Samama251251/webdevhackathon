@@ -67,3 +67,30 @@ export interface UploadProgress {
   completed: boolean;
 }
 
+export interface JobRecommendation {
+  job_id: string;
+  title: string;
+  company_name: string;
+  location: string;
+  via: string;
+  description?: string;
+  thumbnail?: string;
+  extensions?: Record<string, any>;
+  apply_link?: string;
+  compatibility_score?: number;
+  match_explanation?: string;
+  key_requirements?: string[];
+  alignment?: {
+    pros: string[];
+    cons: string[];
+  };
+  posted_at?: string;
+  salary?: string;
+}
+
+export interface JobRecommendResponse {
+  success: boolean;
+  message: string;
+  jobs: JobRecommendation[];
+}
+

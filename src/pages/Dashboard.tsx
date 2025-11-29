@@ -6,6 +6,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { ResumeUpload } from '@/components/Dashboard/ResumeUpload';
 import { ResumeProfile } from '@/components/Dashboard/ResumeProfile';
+import { RecommendedJobs } from '@/components/Dashboard/RecommendedJobs';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { resumeService } from '@/services/resumeService';
@@ -26,7 +27,7 @@ export default function Dashboard() {
     try {
       const latestResume = await resumeService.getLatestResumeWithDetails(user.id);
       setResume(latestResume);
-      
+
       // If resume exists and has details, switch to profile tab
       if (latestResume && latestResume.details) {
         setActiveTab('profile');
@@ -90,6 +91,9 @@ export default function Dashboard() {
               <TabsTrigger value="upload">Upload Resume</TabsTrigger>
               <TabsTrigger value="profile" disabled={!resume}>
                 My Resume
+              </TabsTrigger>
+              <TabsTrigger value="jobs" disabled={!resume}>
+                Jobs For You
               </TabsTrigger>
             </TabsList>
 
@@ -195,6 +199,22 @@ export default function Dashboard() {
                 <Card>
                   <CardContent className="py-12 text-center">
                     <p className="text-gray-500">No resume data available</p>
+                  </CardContent>
+                </Card>
+              )}
+            </TabsContent>
+
+            {/* Jobs Tab */}
+            <TabsContent value="jobs">
+              {resume && user ? (
+                <RecommendedJobs resumeId={resume.id} userId={user.id} />
+              ) : (
+                <Card>
+                  <CardContent className="py-12 text-center">
+                    <p className="text-gray-500">Please upload a resume to see job recommendations.</p>
+                    <Button variant="outline" className="mt-4" onClick={() => setActiveTab('upload')}>
+                      Upload Resume
+                    </Button>
                   </CardContent>
                 </Card>
               )}

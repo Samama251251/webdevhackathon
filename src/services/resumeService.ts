@@ -6,6 +6,7 @@ import type {
   ResumeUploadResponse,
   ResumeAnalyzeRequest,
   ResumeAnalyzeResponse,
+  JobRecommendResponse,
 } from '@/types/resume';
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8000';
@@ -284,6 +285,44 @@ export const resumeService = {
     } catch (error) {
       console.error('Error fetching latest resume:', error);
       return null;
+    }
+  },
+
+  /**
+   * Get recommended jobs based on resume
+   */
+  async getRecommendedJobs(
+    resumeId: string,
+    userId: string,
+    location: string = 'Remote'
+  ): Promise<JobRecommendResponse> {
+    try {
+      const response = await fetch(`${BACKEND_URL}/api/jobs/recommend`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          resume_id: resumeId,
+          user_id: userId,
+          location: location,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to fetch job recommendations');
+      }
+
+      const data: JobRecommendResponse = await response.json();
+      return data;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+      return {
+        success: false,
+        message: errorMessage,
+        jobs: [],
+      };
     }
   },
 };
