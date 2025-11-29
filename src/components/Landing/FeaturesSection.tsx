@@ -91,11 +91,11 @@ export function FeaturesSection() {
             <motion.div key={feature.title} variants={cardVariants}>
               <Card className="h-full transition-all hover:shadow-lg">
                 <CardHeader>
-                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                  <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mx-auto">
                     <feature.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <CardTitle className="text-xl">{feature.title}</CardTitle>
-                  <CardDescription className="text-base">
+                  <CardTitle className="text-xl text-center">{feature.title}</CardTitle>
+                  <CardDescription className="text-base text-center">
                     {feature.description}
                   </CardDescription>
                 </CardHeader>

@@ -26,7 +26,7 @@ const itemVariants = {
 export function HeroSection() {
   return (
     <section className="relative overflow-hidden bg-gradient-to-b from-background to-muted/20 py-20 sm:py-32">
-      <div className="container px-4">
+      <div className="container px-4 flex flex-col items-center">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -88,7 +88,7 @@ export function HeroSection() {
                 className="flex flex-col items-center gap-2 rounded-lg border bg-card p-4"
               >
                 <feature.icon className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium">{feature.label}</span>
+                <span className="text-sm font-medium text-center">{feature.label}</span>
               </motion.div>
             ))}
           </motion.div>
@@ -99,28 +99,7 @@ export function HeroSection() {
       <div className="absolute inset-0 -z-10 overflow-hidden">
         <motion.div
           className="absolute -left-1/2 top-0 h-[500px] w-[500px] rounded-full bg-primary/10 blur-3xl"
-          animate={{
-            x: [0, 100, 0],
-            y: [0, 50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute -right-1/2 bottom-0 h-[500px] w-[500px] rounded-full bg-primary/10 blur-3xl"
-          animate={{
-            x: [0, -100, 0],
-            y: [0, -50, 0],
-          }}
-          transition={{
-            duration: 20,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
+        ></motion.div>
       </div>
     </section>
   );
