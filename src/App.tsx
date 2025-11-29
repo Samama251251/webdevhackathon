@@ -5,6 +5,8 @@ import Landing from '@/pages/Landing';
 import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import Dashboard from '@/pages/Dashboard';
+import BehavioralInterview from '@/pages/BehavioralInterview';
+import TechnicalInterview from '@/pages/TechnicalInterview';
 
 function App() {
   return (
@@ -19,6 +21,22 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/behavioral-interview"
+            element={
+              <ProtectedRoute>
+                <BehavioralInterview />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/technical-interview"
+            element={
+              <ProtectedRoute>
+                <TechnicalInterview />
               </ProtectedRoute>
             }
           />
