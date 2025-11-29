@@ -115,60 +115,41 @@ export default function Dashboard() {
               )}
             </div>
 
-            <nav className="space-y-1">
-              {sidebarItems.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => !item.disabled && setActiveTab(item.id)}
-                  disabled={item.disabled}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-md transition-colors",
-                    activeTab === item.id
-                      ? "bg-primary text-primary-foreground"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                    item.disabled && "opacity-50 cursor-not-allowed hover:bg-transparent",
-                    isCollapsed && "justify-center px-0"
-                  )}
-                  title={isCollapsed ? item.label : undefined}
-                >
-                  <item.icon className="h-4 w-4 flex-shrink-0" />
-                  {!isCollapsed && <span>{item.label}</span>}
-                </button>
-              ))}
-            </nav>
+              {/* Deep Research Card */}
+              <Card className="mt-6 border-2 border-primary/10 bg-gradient-to-r from-primary/5 to-purple-500/5">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <span className="text-2xl">⚡</span>
+                    Deep Research Interview Prep
+                  </CardTitle>
+                  <CardDescription>
+                    Generate a comprehensive, AI-powered interview dossier for your target role.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Get company intelligence, tailored technical questions, and behavioral scenarios based on real-time web research.
+                  </p>
+                  <Button
+                    onClick={() => navigate('/deep-research')}
+                    className="w-full sm:w-auto"
+                  >
+                    Start Deep Research
+                  </Button>
+                </CardContent>
+              </Card>
 
-            <div className="pt-4 border-t">
-              <Button
-                onClick={handleSignOut}
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start text-muted-foreground hover:text-foreground px-2",
-                  isCollapsed && "justify-center px-0"
-                )}
-                title={isCollapsed ? "Sign Out" : undefined}
-              >
-                <LogOut className="h-4 w-4 flex-shrink-0" />
-                {!isCollapsed && <span className="ml-2">Sign Out</span>}
-              </Button>
-            </div>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-1 p-8 overflow-y-auto">
-          <div className="max-w-5xl mx-auto">
-            {activeTab === 'resume' && (
-              <div className="space-y-6">
-                {resume ? (
-                  <div className="space-y-6">
-                    <div className="flex justify-end">
-                      <Button variant="outline" onClick={() => {
-                        if (window.confirm('Uploading a new resume will replace the current one. Continue?')) {
-                          setResume(null);
-                        }
-                      }}>
-                        Upload New Resume
-                      </Button>
+              {/* Account Info */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Information</CardTitle>
+                  <CardDescription>Your account details</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground">Email:</p>
+                      <p className="font-medium">{user?.email}</p>
                     </div>
                     <ResumeProfile resume={resume} onDelete={handleDeleteResume} />
                   </div>

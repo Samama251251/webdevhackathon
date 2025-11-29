@@ -1,20 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import Vapi from '@vapi-ai/web';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mic, MicOff, Code, Database, Cpu, Terminal, Clock, Zap } from 'lucide-react';
 import type { VapiMessage } from '@/types/vapi';
 
 export default function TechnicalInterview() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
+  const callIdRef = useRef<string | null>(null);
+  console.log('TechnicalInterview location.state:', location.state);
+  const {
+    company_name,
+    role,
+    user_background,
+    company_background,
+    technical_questions,
+    technologies
+  } = location.state || {};
+
+
+
   const [vapi, setVapi] = useState<Vapi | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [transcript, setTranscript] = useState<VapiMessage[]>([]);
+  const [_transcript, setTranscript] = useState<VapiMessage[]>([]);
   const [callDuration, setCallDuration] = useState(0);
 
   // Get API key from environment variable
@@ -27,7 +46,7 @@ export default function TechnicalInterview() {
 
     // Event listeners
     vapiInstance.on('call-start', () => {
-      console.log('Technical interview started');
+      console.log('Technical interview started')
       setIsConnected(true);
     });
 
@@ -35,6 +54,9 @@ export default function TechnicalInterview() {
       console.log('Technical interview ended');
       setIsConnected(false);
       setIsSpeaking(false);
+      if (callIdRef.current) {
+        navigate(`/call-analysis/${callIdRef.current}`);
+      }
     });
 
     vapiInstance.on('speech-start', () => {
@@ -81,14 +103,21 @@ export default function TechnicalInterview() {
       // Pass dynamic variables for the technical interview prompt
       vapi.start(ASSISTANT_ID, {
         variableValues: {
-          company: "Example Corp", // Replace with actual company name
-          user_background: "Software Engineer with 3 years of experience in full-stack development, React, Node.js, and PostgreSQL",
-          role: "Senior Software Engineer",
+          company: company_name || "Example Corp",
+          user_background: user_background || "Software Engineer with 3 years of experience",
+          role: role || "Senior Software Engineer",
           interviewer_name: "Elliot",
-          tech_stack: "React, Node.js, TypeScript, PostgreSQL, AWS, Docker",
-          company_research: "Example Corp uses modern microservices architecture with focus on scalability and cloud-native solutions",
-          technical_questions: "Explain the event loop in Node.js, How would you design a scalable URL shortener, Describe async/await patterns",
-          call_type: "technical"
+          tech_stack: technologies || "React, Node.js, TypeScript, PostgreSQL, AWS, Docker",
+          company_research: company_background || "Example Corp uses modern microservices architecture",
+          technical_questions: Array.isArray(technical_questions)
+            ? technical_questions.join(". ")
+            : (technical_questions || "Explain the event loop in Node.js"),
+          call_type: "technical",
+          user_id: user?.id
+        }
+      }).then((call: any) => {
+        if (call) {
+          callIdRef.current = call.id;
         }
       });
     }
@@ -124,22 +153,7 @@ export default function TechnicalInterview() {
     }
   ];
 
-  const codingChallenges = [
-    { difficulty: "Easy", name: "Two Sum", category: "Arrays" },
-    { difficulty: "Easy", name: "Valid Parentheses", category: "Stack" },
-    { difficulty: "Medium", name: "Binary Tree Level Order", category: "Trees" },
-    { difficulty: "Medium", name: "Longest Substring", category: "Strings" },
-    { difficulty: "Hard", name: "Merge K Sorted Lists", category: "Lists" }
-  ];
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "Easy": return "secondary";
-      case "Medium": return "default";
-      case "Hard": return "destructive";
-      default: return "outline";
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/20">
