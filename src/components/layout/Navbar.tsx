@@ -48,12 +48,6 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Button variant="ghost" className="hidden sm:flex">
-                Features
-              </Button>
-              <Button variant="ghost" className="hidden sm:flex">
-                How It Works
-              </Button>
               <Button variant="ghost" asChild>
                 <Link to="/signin">Sign In</Link>
               </Button>
