@@ -17,6 +17,19 @@ CREATE TABLE public.resumes (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 2.1 STORAGE POLICIES (Bucket: "resumes")
+-- Policy: Users can upload own resumes
+-- (storage.foldername(name))[1] = auth.uid()::text
+
+-- Policy: Users can read own resumes
+-- (storage.foldername(name))[1] = auth.uid()::text
+
+-- Policy: Users can delete own resumes
+-- (storage.foldername(name))[1] = auth.uid()::text
+
+-- Policy: Public read access
+-- bucket_id = 'resumes'
+
 -- 3. RESUME DETAILS
 -- Stores the parsed data. We use JSONB for flexible lists (Experience, Education, Projects)
 -- and specific columns for high-level data.
