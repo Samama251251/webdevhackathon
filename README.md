@@ -54,5 +54,3 @@ Fast Hackathon
 
 
 Some more random shit that we will add soon when we use it.
-
-
