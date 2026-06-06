@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { ProtectedRoute } from '@/components/common/ProtectedRoute';
 
+import Landing from '@/pages/Landing';
 import SignIn from '@/pages/SignIn';
 import SignUp from '@/pages/SignUp';
 import Dashboard from '@/pages/Dashboard';
@@ -11,19 +12,18 @@ import DeepResearchPrep from '@/pages/DeepResearchPrep';
 import CallAnalysis from '@/pages/CallAnalysis';
 import Analytics from '@/pages/Analytics';
 
+function RootRoute() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  return user ? <Navigate to="/dashboard" replace /> : <Landing />;
+}
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<RootRoute />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route

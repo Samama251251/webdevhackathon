@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Mic, MicOff, Code, Database, Cpu, Terminal, Clock, Zap } from 'lucide-react';
+import { Mic, MicOff, Code, Database, Cpu, Terminal, Clock, Activity } from 'lucide-react';
 import type { VapiMessage } from '@/types/vapi';
 
 export default function TechnicalInterview() {
@@ -18,7 +18,6 @@ export default function TechnicalInterview() {
   const { user } = useAuth();
 
   const callIdRef = useRef<string | null>(null);
-  console.log('TechnicalInterview location.state:', location.state);
   const {
     company_name,
     role,
@@ -27,8 +26,6 @@ export default function TechnicalInterview() {
     technical_questions,
     technologies
   } = location.state || {};
-
-
 
   const [vapi, setVapi] = useState<Vapi | null>(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -46,12 +43,10 @@ export default function TechnicalInterview() {
 
     // Event listeners
     vapiInstance.on('call-start', () => {
-      console.log('Technical interview started')
       setIsConnected(true);
     });
 
     vapiInstance.on('call-end', () => {
-      console.log('Technical interview ended');
       setIsConnected(false);
       setIsSpeaking(false);
       if (callIdRef.current) {
@@ -100,7 +95,6 @@ export default function TechnicalInterview() {
 
   const startInterview = () => {
     if (vapi) {
-      // Pass dynamic variables for the technical interview prompt
       vapi.start(ASSISTANT_ID, {
         variableValues: {
           company: company_name || "Example Corp",
@@ -153,122 +147,158 @@ export default function TechnicalInterview() {
     }
   ];
 
-
-
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-b from-background to-muted/20">
+    <div className="min-h-screen flex flex-col bg-background selection:bg-foreground selection:text-background noise-overlay">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8 max-w-7xl">
-        <div className="space-y-6">
+      <main className="flex-1 container mx-auto px-4 lg:px-8 py-12 max-w-7xl relative z-10">
+        <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
           {/* Header */}
-          <div className="space-y-2">
-            <div className="flex items-center gap-2">
-              <Code className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl font-bold">Technical Interview Practice</h1>
+          <div className="text-center max-w-3xl mx-auto space-y-4">
+            <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-6">
+              <Code className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <p className="text-muted-foreground text-lg">
-              Master coding challenges and technical concepts with AI-guided practice
+            <h1 className="text-4xl lg:text-5xl font-display tracking-tight text-foreground">
+              Technical Interview
+            </h1>
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Master coding challenges and technical concepts with AI-guided practice.
             </p>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-6">
+          <div className="grid lg:grid-cols-3 gap-8">
             {/* Main Interview Panel */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Interview Session Card */}
-              <Card>
-                <CardHeader>
+              <Card className="border-foreground/10 shadow-lg rounded-2xl bg-card overflow-hidden h-full flex flex-col relative">
+                {isConnected && (
+                  <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-blue-500 to-transparent opacity-50 animate-pulse" />
+                )}
+                <CardHeader className="border-b border-foreground/5 bg-muted/20 pb-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle>Coding Session</CardTitle>
-                      <CardDescription>
+                      <CardTitle className="font-display text-2xl tracking-tight">Coding Session</CardTitle>
+                      <CardDescription className="text-base mt-1">
                         Practice technical questions and explain your approach
                       </CardDescription>
                     </div>
                     {isConnected && (
-                      <Badge variant="default" className="gap-2">
-                        <Clock className="h-3 w-3" />
+                      <Badge variant="outline" className="gap-2 px-3 py-1.5 font-mono text-sm border-foreground/20 bg-background">
+                        <Clock className="h-3.5 w-3.5" />
                         {formatTime(callDuration)}
                       </Badge>
                     )}
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Status and Controls */}
-                  <div className="flex items-center justify-between p-4 bg-muted rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className={`h-3 w-3 rounded-full ${isConnected
-                        ? isSpeaking ? 'bg-red-500 animate-pulse' : 'bg-green-500'
-                        : 'bg-gray-400'
-                        }`} />
-                      <span className="font-medium">
-                        {isConnected
-                          ? isSpeaking ? 'AI is speaking...' : 'Listening...'
-                          : 'Ready to start'
-                        }
-                      </span>
-                      {isConnected && (
-                        <Badge variant="outline" className="ml-2">
-                          <Zap className="h-3 w-3 mr-1" />
-                          Live Session
-                        </Badge>
+                
+                <CardContent className="flex-1 flex flex-col justify-center items-center py-16 space-y-8">
+                  {/* Status Visualizer */}
+                  <div className="relative">
+                    <div className={`w-32 h-32 rounded-full flex items-center justify-center border-4 transition-all duration-500 ${
+                      isConnected 
+                        ? isSpeaking 
+                          ? 'border-red-500/30 bg-red-500/10 scale-110 shadow-[0_0_40px_rgba(239,68,68,0.3)]' 
+                          : 'border-blue-500/30 bg-blue-500/10 shadow-[0_0_30px_rgba(59,130,246,0.2)]'
+                        : 'border-foreground/10 bg-muted'
+                    }`}>
+                      {isConnected ? (
+                        isSpeaking ? (
+                          <Activity className="w-12 h-12 text-red-500 animate-pulse" />
+                        ) : (
+                          <Mic className="w-12 h-12 text-blue-500" />
+                        )
+                      ) : (
+                        <MicOff className="w-12 h-12 text-muted-foreground/50" />
                       )}
                     </div>
-                    <Button
-                      onClick={isConnected ? endInterview : startInterview}
-                      variant={isConnected ? "destructive" : "default"}
-                      size="lg"
-                    >
-                      {isConnected ? (
-                        <>
-                          <MicOff className="mr-2 h-4 w-4" />
-                          End Session
-                        </>
-                      ) : (
-                        <>
-                          <Mic className="mr-2 h-4 w-4" />
-                          Start Session
-                        </>
-                      )}
-                    </Button>
+                    
+                    {/* Ripple effects when speaking */}
+                    {isConnected && isSpeaking && (
+                      <>
+                        <div className="absolute inset-0 rounded-full border border-red-500/30 animate-ping" style={{ animationDuration: '2s' }} />
+                        <div className="absolute inset-0 rounded-full border border-red-500/20 animate-ping" style={{ animationDuration: '2s', animationDelay: '0.5s' }} />
+                      </>
+                    )}
+                  </div>
+
+                  <div className="text-center space-y-2">
+                    <h3 className="text-xl font-display font-medium">
+                      {isConnected
+                        ? isSpeaking ? 'AI is speaking...' : 'Listening to your response...'
+                        : 'Ready to start'
+                      }
+                    </h3>
+                    <p className="text-muted-foreground max-w-sm mx-auto">
+                      {isConnected 
+                        ? 'Ensure you are in a quiet environment and explain your thought process clearly.' 
+                        : 'Click below when you are ready to begin the technical assessment.'}
+                    </p>
                   </div>
                 </CardContent>
+
+                <div className="p-6 bg-muted/20 border-t border-foreground/5">
+                  <Button
+                    onClick={isConnected ? endInterview : startInterview}
+                    variant={isConnected ? "destructive" : "default"}
+                    className={`w-full h-14 rounded-xl text-lg font-medium transition-all hover-lift ${
+                      isConnected 
+                        ? 'bg-destructive/10 text-destructive hover:bg-destructive hover:text-destructive-foreground border border-destructive/20' 
+                        : 'bg-foreground text-background hover:bg-foreground/90'
+                    }`}
+                  >
+                    {isConnected ? (
+                      <>
+                        <MicOff className="mr-2 h-5 w-5" />
+                        End Session
+                      </>
+                    ) : (
+                      <>
+                        <Mic className="mr-2 h-5 w-5" />
+                        Start Session
+                      </>
+                    )}
+                  </Button>
+                </div>
               </Card>
             </div>
 
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Topics Card */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Key Topics</CardTitle>
-                  <CardDescription>Core technical areas to master</CardDescription>
+              <Card className="border-foreground/10 shadow-lg rounded-2xl bg-card">
+                <CardHeader className="pb-4 bg-muted/30 border-b border-foreground/5">
+                  <CardTitle className="font-display text-xl flex items-center gap-2">
+                    <Code className="h-5 w-5 text-blue-500" />
+                    Key Topics
+                  </CardTitle>
+                  <CardDescription className="text-base">Core technical areas to master</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <Tabs defaultValue="data-structures">
-                    <TabsList className="grid w-full grid-cols-3">
-                      <TabsTrigger value="data-structures" className="text-xs">
-                        <Database className="h-3 w-3" />
+                <CardContent className="pt-6">
+                  <Tabs defaultValue="data-structures" className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 bg-muted/50 p-1 rounded-xl h-auto">
+                      <TabsTrigger value="data-structures" className="py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Database className="h-4 w-4" />
                       </TabsTrigger>
-                      <TabsTrigger value="algorithms" className="text-xs">
-                        <Cpu className="h-3 w-3" />
+                      <TabsTrigger value="algorithms" className="py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Cpu className="h-4 w-4" />
                       </TabsTrigger>
-                      <TabsTrigger value="system-design" className="text-xs">
-                        <Terminal className="h-3 w-3" />
+                      <TabsTrigger value="system-design" className="py-2.5 rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm">
+                        <Terminal className="h-4 w-4" />
                       </TabsTrigger>
                     </TabsList>
-                    {technicalTopics.map((topic, index) => (
-                      <TabsContent key={index} value={topic.title.toLowerCase().replace(' ', '-')} className="space-y-2">
-                        <h4 className="font-semibold text-sm">{topic.title}</h4>
-                        <ul className="space-y-1">
-                          {topic.topics.map((item, idx) => (
-                            <li key={idx} className="text-xs text-muted-foreground flex items-center gap-2">
-                              <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                              {item}
-                            </li>
-                          ))}
-                        </ul>
-                      </TabsContent>
-                    ))}
+                    <div className="mt-6">
+                      {technicalTopics.map((topic, index) => (
+                        <TabsContent key={index} value={topic.title.toLowerCase().replace(' ', '-')} className="space-y-4 outline-none">
+                          <h4 className="font-medium text-foreground text-lg">{topic.title}</h4>
+                          <ul className="space-y-3">
+                            {topic.topics.map((item, idx) => (
+                              <li key={idx} className="text-sm text-muted-foreground flex items-center gap-3">
+                                <div className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+                                {item}
+                              </li>
+                            ))}
+                          </ul>
+                        </TabsContent>
+                      ))}
+                    </div>
                   </Tabs>
                 </CardContent>
               </Card>

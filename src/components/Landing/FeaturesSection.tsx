@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   FileText,
   Search,
@@ -7,8 +7,7 @@ import {
   TrendingUp,
   Sparkles,
   Target,
-  BookOpen,
-  BarChart3,
+  FileSearch
 } from "lucide-react";
 
 const features = [
@@ -31,7 +30,7 @@ const features = [
       "Get comprehensive interview preparation materials powered by real-time research. Our AI searches the internet for current, relevant information about your target role and technologies, generating difficulty-appropriate questions and study guides.",
   },
   {
-    icon: BarChart3,
+    icon: FileSearch,
     title: "User Dashboard & Analytics",
     description:
       "Track your job search progress with visual analytics. See your skill coverage, identify strengths and gaps, and review your interview preparation history with AI-generated insights and recommendations.",
@@ -54,8 +53,7 @@ const cardVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      duration: 0.5,
-      ease: "easeOut",
+      duration: 0.5
     },
   },
 };
@@ -87,7 +85,7 @@ export function FeaturesSection() {
           viewport={{ once: true, margin: "-100px" }}
           className="mx-auto mt-16 grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-2"
         >
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <motion.div key={feature.title} variants={cardVariants}>
               <Card className="h-full transition-all hover:shadow-lg">
                 <CardHeader>
@@ -108,8 +106,7 @@ export function FeaturesSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }
-          }
+          viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.3 }}
           className="mx-auto mt-16 max-w-4xl"
         >
@@ -130,9 +127,13 @@ export function FeaturesSection() {
                 title: "Research-Backed",
                 description: "Current insights from across the web",
               },
-            ].map((highlight) => (
-              <div
+            ].map((highlight, index) => (
+              <motion.div
                 key={highlight.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
                 className="flex flex-col items-center gap-2 text-center"
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
@@ -142,7 +143,7 @@ export function FeaturesSection() {
                 <p className="text-sm text-muted-foreground">
                   {highlight.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.div >

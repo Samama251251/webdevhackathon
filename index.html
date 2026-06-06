@@ -1,12 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" suppressHydrationWarning>
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>hackathonfast</title>
+    <meta name="description" content="AI-powered career preparation platform. Upload your resume, discover matched jobs, and ace interviews with deep research and AI mock sessions." />
+    <title>CareerPrep AI — Land Your Dream Job with AI</title>
+
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('theme');
+          if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+          }
+        } catch(e) {}
+      })();
+    </script>
   </head>
-  <body>
+  <body class="font-sans antialiased bg-background text-foreground">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
