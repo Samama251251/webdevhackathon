@@ -8,7 +8,7 @@ import { IntegrationsSection } from "@/components/Landing/integrations-section";
 import { SecuritySection } from "@/components/Landing/security-section";
 import { DevelopersSection } from "@/components/Landing/developers-section";
 import { TestimonialsSection } from "@/components/Landing/testimonials-section";
-import { PricingSection } from "@/components/Landing/pricing-section";
+
 import { CtaSection } from "@/components/Landing/cta-section";
 import { FooterSection } from "@/components/Landing/footer-section";
 
@@ -26,7 +26,7 @@ export default function Landing() {
         <SecuritySection />
         <DevelopersSection />
         <TestimonialsSection />
-        <PricingSection />
+
         <CtaSection />
       </main>
       <FooterSection />
