@@ -23,7 +23,7 @@ const signUpSchema = z
     email: z.string().email("Please enter a valid email address"),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string(),
-    username: z.string().optional(),
+    username: z.string().min(1, "Username is required"),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -142,7 +142,6 @@ export default function SignUp() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="you@example.com"
                     {...register("email")}
                     aria-invalid={errors.email ? "true" : "false"}
                     className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"
@@ -156,15 +155,20 @@ export default function SignUp() {
 
                 <div className="space-y-2">
                   <Label htmlFor="username" className="text-sm font-medium">
-                    Username (Optional)
+                    Username
                   </Label>
                   <Input
                     id="username"
                     type="text"
-                    placeholder="johndoe"
                     {...register("username")}
+                    aria-invalid={errors.username ? "true" : "false"}
                     className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"
                   />
+                  {errors.username && (
+                    <p className="text-sm text-destructive font-medium">
+                      {errors.username.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -174,7 +178,6 @@ export default function SignUp() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
                     {...register("password")}
                     aria-invalid={errors.password ? "true" : "false"}
                     className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"
@@ -196,7 +199,6 @@ export default function SignUp() {
                   <Input
                     id="confirmPassword"
                     type="password"
-                    placeholder="••••••••"
                     {...register("confirmPassword")}
                     aria-invalid={errors.confirmPassword ? "true" : "false"}
                     className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"

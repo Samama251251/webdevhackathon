@@ -94,7 +94,6 @@ export default function SignIn() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="you@example.com"
                   {...register("email")}
                   aria-invalid={errors.email ? "true" : "false"}
                   className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"
@@ -121,7 +120,6 @@ export default function SignIn() {
                 <Input
                   id="password"
                   type="password"
-                  placeholder="••••••••"
                   {...register("password")}
                   aria-invalid={errors.password ? "true" : "false"}
                   className="rounded-xl bg-background/50 border-foreground/10 focus-visible:ring-foreground/20 h-12"

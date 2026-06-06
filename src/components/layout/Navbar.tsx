@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Sun, Moon } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion } from "framer-motion";
 
 export function Navbar() {
   const { user, signOut } = useAuth();
@@ -85,28 +86,42 @@ export function Navbar() {
               </button>
             </>
           ) : isAuthPage ? (
-            <>
+            <div className="flex items-center relative">
               <Link
                 to="/signin"
-                className={
+                className={`relative px-5 py-2 text-sm font-medium transition-colors z-10 ${
                   location.pathname === "/signin"
-                    ? "px-5 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
-                    : "text-sm text-foreground/70 hover:text-foreground transition-colors px-2"
-                }
+                    ? "text-primary-foreground"
+                    : "text-foreground/70 hover:text-foreground"
+                }`}
               >
+                {location.pathname === "/signin" && (
+                  <motion.div
+                    layoutId="auth-active"
+                    className="absolute inset-0 bg-primary rounded-md shadow-sm -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className={
+                className={`relative px-5 py-2 text-sm font-medium transition-colors z-10 ${
                   location.pathname === "/signup"
-                    ? "px-5 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
-                    : "text-sm text-foreground/70 hover:text-foreground transition-colors px-2"
-                }
+                    ? "text-primary-foreground"
+                    : "text-foreground/70 hover:text-foreground"
+                }`}
               >
+                {location.pathname === "/signup" && (
+                  <motion.div
+                    layoutId="auth-active"
+                    className="absolute inset-0 bg-primary rounded-md shadow-sm -z-10"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
                 Sign up
               </Link>
-            </>
+            </div>
           ) : (
             <>
               <Link
