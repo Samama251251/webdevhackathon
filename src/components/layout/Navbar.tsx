@@ -88,17 +88,21 @@ export function Navbar() {
             <>
               <Link
                 to="/signin"
-                className={`text-sm transition-colors ${
+                className={
                   location.pathname === "/signin"
-                    ? "text-foreground font-medium"
-                    : "text-foreground/70 hover:text-foreground"
-                }`}
+                    ? "px-5 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+                    : "text-sm text-foreground/70 hover:text-foreground transition-colors px-2"
+                }
               >
                 Sign in
               </Link>
               <Link
                 to="/signup"
-                className="px-5 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+                className={
+                  location.pathname === "/signup"
+                    ? "px-5 py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors shadow-sm"
+                    : "text-sm text-foreground/70 hover:text-foreground transition-colors px-2"
+                }
               >
                 Sign up
               </Link>
